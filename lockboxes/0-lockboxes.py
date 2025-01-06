@@ -1,41 +1,24 @@
 #!/usr/bin/python3
-"""
-Module pour déterminer si toutes les boîtes peuvent être déverrouillées
-"""
+"""lockboxes"""
 
 
 def canUnlockAll(boxes):
     """
-    Détermine si toutes les boîtes peuvent être déverrouillées.
-
-    Args:
-        boxes (list): Liste de listes où chaque liste contient les clés
-
-    Returns:
-        bool: True si toutes les boîtes peuvent être ouvertes, False sinon
-    """
-    if not boxes or not isinstance(boxes, list):
-        return False
-
+      Determines if all the boxes can be opened.
+      Args:
+          boxes: List of list
+      Returns:
+            True or false
+      """
     n = len(boxes)
-    if n == 0:
-        return True
+    open = [False] * n
+    open[0] = True
+    keys = boxes[0]
 
-    # Ensemble pour suivre les boîtes déverrouillées
-    unlocked = {0}
-    # Liste des clés disponibles à vérifier
-    keys_to_check = boxes[0]
+    while keys:
+        key = keys.pop()
+        if key < n and not open[key]:
+            open[key] = True
+            keys.extend(boxes[key])
 
-    # Tant qu'il y a des clés à vérifier
-    while keys_to_check:
-        key = keys_to_check.pop()
-
-        # Vérifie si la clé est valide et si la boîte n'est pas déjà déverrouillée
-        if isinstance(key, int) and 0 <= key < n and key not in unlocked:
-            # Ajoute la boîte aux boîtes déverrouillées
-            unlocked.add(key)
-            # Ajoute les nouvelles clés à vérifier
-            keys_to_check.extend(boxes[key])
-
-    # Vérifie si toutes les boîtes ont été déverrouillées
-    return len(unlocked) == n 
+    return all(open)
