@@ -7,10 +7,10 @@ Module pour déterminer si toutes les boîtes peuvent être déverrouillées
 def canUnlockAll(boxes):
     """
     Détermine si toutes les boîtes peuvent être déverrouillées.
-    
+
     Args:
         boxes (list): Liste de listes où chaque liste contient les clés
-        
+
     Returns:
         bool: True si toutes les boîtes peuvent être ouvertes, False sinon
     """
@@ -29,7 +29,7 @@ def canUnlockAll(boxes):
     # Tant qu'il y a des clés à vérifier
     while keys_to_check:
         key = keys_to_check.pop()
-        
+
         # Vérifie si la clé est valide et si la boîte n'est pas déjà déverrouillée
         if isinstance(key, int) and 0 <= key < n and key not in unlocked:
             # Ajoute la boîte aux boîtes déverrouillées
