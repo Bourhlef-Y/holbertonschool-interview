@@ -1,15 +1,16 @@
 #!/usr/bin/python3
-"""lockboxes"""
+"""Solve the lockboxes problem."""
 
 
-def canUnlockAll(boxes):
+def can_unlock_all(boxes):
+    """Determine if all the boxes can be opened.
+
+    Args:
+        boxes: List of list
+
+    Returns:
+        True or false
     """
-      Determines if all the boxes can be opened.
-      Args:
-          boxes: List of list
-      Returns:
-            True or false
-      """
     n = len(boxes)
     open = [False] * n
     open[0] = True
