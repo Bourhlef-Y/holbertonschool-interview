@@ -1,25 +1,38 @@
 #!/usr/bin/python3
-"""Solve the lockboxes problem."""
+"""Module to determine if all boxes can be unlocked."""
 
 
 def can_unlock_all(boxes):
-    """Determine if all the boxes can be opened.
+    """Determine if all boxes can be unlocked.
 
     Args:
-        boxes: List of list
+        boxes (list): List of lists where each list contains keys
 
     Returns:
-        True or false
+        bool: True if all boxes can be opened, False otherwise
     """
+    if not boxes or not isinstance(boxes, list):
+        return False
+
     n = len(boxes)
-    open = [False] * n
-    open[0] = True
-    keys = boxes[0]
+    if n == 0:
+        return True
 
-    while keys:
-        key = keys.pop()
-        if key < n and not open[key]:
-            open[key] = True
-            keys.extend(boxes[key])
+    # Set to track unlocked boxes
+    unlocked = {0}
+    # List of keys to check
+    keys_to_check = boxes[0]
 
-    return all(open)
+    # While there are keys to check
+    while keys_to_check:
+        key = keys_to_check.pop()
+
+        # Check if key is valid and box is not already unlocked
+        if isinstance(key, int) and 0 <= key < n and key not in unlocked:
+            # Add box to unlocked boxes
+            unlocked.add(key)
+            # Add new keys to check
+            keys_to_check.extend(boxes[key])
+
+    # Check if all boxes have been unlocked
+    return len(unlocked) == n
