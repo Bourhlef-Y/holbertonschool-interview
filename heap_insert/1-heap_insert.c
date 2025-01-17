@@ -26,50 +26,62 @@ void swap_nodes(heap_t *node1, heap_t *node2)
 }
 
 /**
- * get_last_node - Trouve le dernier nœud pour l'insertion
- * @root: Racine du tas
- * @size: Taille actuelle du tas
- * Return: Pointeur vers le parent du nouveau nœud
+ * binary_tree_is_perfect - Vérifie si un arbre binaire est parfait
+ * @tree: Pointeur vers la racine
+ * Return: 1 si parfait, 0 sinon
  */
-heap_t *get_last_node(heap_t *root, size_t size)
+int binary_tree_is_perfect(const binary_tree_t *tree)
 {
-	size_t bit;
-	size_t mask = size;
-
-	if (!root || size < 1)
-		return (NULL);
-
-	for (bit = 1; !(bit & size); bit <<= 1)
-		continue;
-	bit >>= 1;
-
-	while (bit > 1)
-	{
-		bit >>= 1;
-		if (mask & bit)
-			root = root->right;
-		else
-			root = root->left;
-	}
-
-	return (root);
+	if (!tree)
+		return (0);
+	if (!tree->left && !tree->right)
+		return (1);
+	if (!tree->left || !tree->right)
+		return (0);
+	return (binary_tree_is_perfect(tree->left) &&
+		binary_tree_is_perfect(tree->right));
 }
 
 /**
- * heapify_up - Réorganise le tas de bas en haut
- * @node: Nœud à partir duquel commencer la réorganisation
- * Return: Pointeur vers le nœud final après réorganisation
+ * find_parent - Trouve le parent pour le nouveau nœud
+ * @root: Racine du tas
+ * Return: Pointeur vers le parent
  */
-heap_t *heapify_up(heap_t *node)
+heap_t *find_parent(heap_t *root)
 {
-	heap_t *current = node;
+	heap_t *parent = root;
+	size_t height = 0;
+	size_t i;
+	size_t max_nodes;
 
-	while (current->parent && current->n > current->parent->n)
+	while (parent->left)
 	{
-		swap_nodes(current, current->parent);
-		current = current->parent;
+		if (!parent->right || !binary_tree_is_perfect(parent->left))
+			break;
+		parent = parent->left;
+		height++;
 	}
-	return (current);
+
+	max_nodes = 1;
+	for (i = 0; i < height; i++)
+		max_nodes *= 2;
+
+	if (!parent->left)
+		return (parent);
+	if (!parent->right)
+		return (parent);
+
+	parent = root;
+	for (i = height - 1; i > 0; i--)
+	{
+		max_nodes /= 2;
+		if (binary_tree_size(parent->left) < max_nodes)
+			parent = parent->left;
+		else
+			parent = parent->right;
+	}
+
+	return (parent);
 }
 
 /**
@@ -81,7 +93,6 @@ heap_t *heapify_up(heap_t *node)
 heap_t *heap_insert(heap_t **root, int value)
 {
 	heap_t *new_node, *parent;
-	size_t size;
 
 	if (!root)
 		return (NULL);
@@ -92,12 +103,7 @@ heap_t *heap_insert(heap_t **root, int value)
 		return (*root);
 	}
 
-	size = binary_tree_size(*root);
-	parent = get_last_node(*root, size);
-
-	if (!parent)
-		return (NULL);
-
+	parent = find_parent(*root);
 	new_node = binary_tree_node(parent, value);
 	if (!new_node)
 		return (NULL);
@@ -107,5 +113,11 @@ heap_t *heap_insert(heap_t **root, int value)
 	else
 		parent->right = new_node;
 
-	return (heapify_up(new_node));
+	while (new_node->parent && new_node->n > new_node->parent->n)
+	{
+		swap_nodes(new_node, new_node->parent);
+		new_node = new_node->parent;
+	}
+
+	return (new_node);
 }
