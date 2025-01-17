@@ -26,6 +26,36 @@ void swap_nodes(heap_t *node1, heap_t *node2)
 }
 
 /**
+ * get_last_node - Trouve le dernier nœud pour l'insertion
+ * @root: Racine du tas
+ * @size: Taille actuelle du tas
+ * Return: Pointeur vers le parent du nouveau nœud
+ */
+heap_t *get_last_node(heap_t *root, size_t size)
+{
+	size_t bit;
+	size_t mask = size;
+
+	if (!root || size < 1)
+		return (NULL);
+
+	for (bit = 1; !(bit & size); bit <<= 1)
+		continue;
+	bit >>= 1;
+
+	while (bit > 1)
+	{
+		bit >>= 1;
+		if (mask & bit)
+			root = root->right;
+		else
+			root = root->left;
+	}
+
+	return (root);
+}
+
+/**
  * heapify_up - Réorganise le tas de bas en haut
  * @node: Nœud à partir duquel commencer la réorganisation
  * Return: Pointeur vers le nœud final après réorganisation
@@ -39,37 +69,6 @@ heap_t *heapify_up(heap_t *node)
 		swap_nodes(current, current->parent);
 		current = current->parent;
 	}
-	return (current);
-}
-
-/**
- * get_parent - Trouve le parent du prochain nœud à insérer
- * @root: Racine du tas
- * @index: Index du prochain nœud
- * Return: Pointeur vers le parent
- */
-heap_t *get_parent(heap_t *root, size_t index)
-{
-	size_t parent_idx = (index - 1) / 2;
-	size_t level = 0;
-	size_t max_nodes = 1;
-	heap_t *current = root;
-
-	while (max_nodes <= parent_idx)
-	{
-		max_nodes = (max_nodes << 1) + 1;
-		level++;
-	}
-
-	while (level > 0)
-	{
-		level--;
-		if ((parent_idx & (1UL << level)) == 0)
-			current = current->left;
-		else
-			current = current->right;
-	}
-
 	return (current);
 }
 
@@ -94,7 +93,10 @@ heap_t *heap_insert(heap_t **root, int value)
 	}
 
 	size = binary_tree_size(*root);
-	parent = get_parent(*root, size);
+	parent = get_last_node(*root, size);
+
+	if (!parent)
+		return (NULL);
 
 	new_node = binary_tree_node(parent, value);
 	if (!new_node)
