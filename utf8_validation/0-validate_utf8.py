@@ -30,7 +30,7 @@ def validUTF8(data):
                 mask = mask >> 1
 
             # Pour un octet simple, remaining_bytes doit être 0
-            # Pour un caractère multi-octets, remaining_bytes doit être entre 2 et 4
+            # Pour un char multi-octets, remaining_bytes doit être entre 2 et 4
             if remaining_bytes == 0:
                 continue
             if remaining_bytes == 1 or remaining_bytes > 4:
@@ -45,4 +45,4 @@ def validUTF8(data):
             remaining_bytes -= 1
 
     # Tous les caractères doivent être complets
-    return remaining_bytes == 0 
+    return remaining_bytes == 0
