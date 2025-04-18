@@ -50,4 +50,4 @@ request(filmUrl, async (error, response, body) => {
     console.error('Erreur lors de la récupération des personnages:', err);
     process.exit(1);
   }
-}); 
+});
