@@ -54,10 +54,10 @@ def solve_nqueens_util(board, col, solutions):
         if is_safe(board, i, col):
             # Place the queen
             board[i][col] = 1
-            
+
             # Recur to place rest of the queens
             solve_nqueens_util(board, col + 1, solutions)
-            
+
             # Backtrack
             board[i][col] = 0
 
@@ -69,10 +69,10 @@ def solve_nqueens(n):
     # Initialize the board
     board = [[0 for _ in range(n)] for _ in range(n)]
     solutions = []
-    
+
     # Start solving from column 0
     solve_nqueens_util(board, 0, solutions)
-    
+
     return solutions
 
 
@@ -81,17 +81,17 @@ if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: nqueens N")
         sys.exit(1)
-    
+
     try:
         n = int(sys.argv[1])
     except ValueError:
         print("N must be a number")
         sys.exit(1)
-    
+
     if n < 4:
         print("N must be at least 4")
         sys.exit(1)
-    
+
     # Solve and print solutions
     solutions = solve_nqueens(n)
     for solution in solutions:
