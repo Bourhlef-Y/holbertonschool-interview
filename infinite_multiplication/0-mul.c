@@ -11,13 +11,13 @@ int _putchar(char c);
  */
 int is_digit(char *str)
 {
-    while (*str)
-    {
-        if (*str < '0' || *str > '9')
-            return 0;
-        str++;
-    }
-    return 1;
+	while (*str)
+	{
+		if (*str < '0' || *str > '9')
+			return (0);
+		str++;
+	}
+	return (1);
 }
 
 /**
@@ -27,44 +27,43 @@ int is_digit(char *str)
  */
 void multiply(char *s1, char *s2)
 {
-    int len1 = strlen(s1);
-    int len2 = strlen(s2);
-    int *result = calloc(len1 + len2, sizeof(int));
-    int i, j, carry;
+	int len1 = strlen(s1);
+	int len2 = strlen(s2);
+	int *result = calloc(len1 + len2, sizeof(int));
+	int i, j, carry;
 
-    if (!result)
-        exit(98);
+	if (!result)
+		exit(98);
 
-    // Multiplication
-    for (i = len1 - 1; i >= 0; i--)
-    {
-        for (j = len2 - 1; j >= 0; j--)
-        {
-            result[i + j + 1] += (s1[i] - '0') * (s2[j] - '0');
-        }
-    }
+	for (i = len1 - 1; i >= 0; i--)
+	{
+		for (j = len2 - 1; j >= 0; j--)
+		{
+			result[i + j + 1] += (s1[i] - '0') * (s2[j] - '0');
+		}
+	}
 
-    // Gestion des retenues
-    for (i = len1 + len2 - 1; i > 0; i--)
-    {
-        carry = result[i] / 10;
-        result[i - 1] += carry;
-        result[i] %= 10;
-    }
 
-    // Affichage du résultat
-    i = 0;
-    while (i < len1 + len2 - 1 && result[i] == 0)
-        i++;
-    
-    while (i < len1 + len2)
-    {
-        _putchar(result[i] + '0');
-        i++;
-    }
-    _putchar('\n');
+	for (i = len1 + len2 - 1; i > 0; i--)
+	{
+		carry = result[i] / 10;
+		result[i - 1] += carry;
+		result[i] %= 10;
+	}
 
-    free(result);
+
+	i = 0;
+	while (i < len1 + len2 - 1 && result[i] == 0)
+		i++;
+
+	while (i < len1 + len2)
+	{
+		_putchar(result[i] + '0');
+		i++;
+	}
+	_putchar('\n');
+
+	free(result);
 }
 
 /**
@@ -75,19 +74,19 @@ void multiply(char *s1, char *s2)
  */
 int main(int argc, char *argv[])
 {
-    if (argc != 3 || !is_digit(argv[1]) || !is_digit(argv[2]))
-    {
-        printf("Error\n");
-        return 98;
-    }
+	if (argc != 3 || !is_digit(argv[1]) || !is_digit(argv[2]))
+	{
+		printf("Error\n");
+		return (98);
+	}
 
-    if (argv[1][0] == '0' || argv[2][0] == '0')
-    {
-        _putchar('0');
-        _putchar('\n');
-        return 0;
-    }
+	if (argv[1][0] == '0' || argv[2][0] == '0')
+	{
+		_putchar('0');
+		_putchar('\n');
+		return (0);
+	}
 
-    multiply(argv[1], argv[2]);
-    return 0;
-} 
+	multiply(argv[1], argv[2]);
+	return (0);
+}
