@@ -1,100 +1,113 @@
+#include <stdlib.h>
 #include "binary_trees.h"
 
 /**
- * heap_extract - Extracts the root value from a max binary heap.
- * @root: Double pointer to the root of the heap.
- *
- * Return: The value stored in the root node, or 0 if the function fails.
+ * swap - swaps two integers
+ * @a: first integer
+ * @b: second integer
  */
-int heap_extract(heap_t **root)
+static void swap(int *a, int *b)
 {
-	int extracted_value;
-	heap_t *last, *parent = NULL;
+	int temp = *a;
+	*a = *b;
+	*b = temp;
+}
 
-	if (!root || !(*root))
+/**
+ * binary_tree_height - measures the height of a binary tree
+ * @tree: pointer to the root node of the tree
+ * Return: height of tree, 0 if tree is NULL
+ */
+static size_t binary_tree_height(const binary_tree_t *tree)
+{
+	size_t left, right;
+
+	if (!tree)
 		return (0);
 
-	extracted_value = (*root)->n;
+	left = binary_tree_height(tree->left);
+	right = binary_tree_height(tree->right);
 
-	last = get_last_node(*root);
-	if (last == *root)
+	return (1 + (left > right ? left : right));
+}
+
+/**
+ * binary_tree_size - measures the size of a binary tree
+ * @tree: pointer to the root node of the tree
+ * Return: size of tree, 0 if tree is NULL
+ */
+static size_t binary_tree_size(const binary_tree_t *tree)
+{
+	if (!tree)
+		return (0);
+	return (1 + binary_tree_size(tree->left) + binary_tree_size(tree->right));
+}
+
+/**
+ * heapify - maintains the max heap property
+ * @root: pointer to the root node
+ */
+static void heapify(binary_tree_t *root)
+{
+	binary_tree_t *largest = root;
+	binary_tree_t *left = root->left;
+	binary_tree_t *right = root->right;
+
+	if (left && left->n > largest->n)
+		largest = left;
+
+	if (right && right->n > largest->n)
+		largest = right;
+
+	if (largest != root)
+	{
+		swap(&root->n, &largest->n);
+		heapify(largest);
+	}
+}
+
+/**
+ * heap_extract - extracts the root node from a Max Binary Heap
+ * @root: double pointer to the root node of the heap
+ * Return: value stored in the root node, or 0 on failure
+ */
+int heap_extract(binary_tree_t **root)
+{
+	int value;
+	binary_tree_t *last, *current;
+	size_t size, bit;
+
+	if (!root || !*root)
+		return (0);
+
+	value = (*root)->n;
+	size = binary_tree_size(*root);
+
+	if (size == 1)
 	{
 		free(*root);
 		*root = NULL;
-		return (extracted_value);
+		return (value);
 	}
 
+	/* Find the last node */
+	current = *root;
+	for (bit = 1 << (binary_tree_height(*root) - 1); bit > 1; bit >>= 1)
+		current = size & bit ? current->right : current->left;
+
+	last = size & 1 ? current->right : current->left;
+
+	/* Replace root value with last node value */
 	(*root)->n = last->n;
 
-	parent = last->parent;
-	if (parent->left == last)
-		parent->left = NULL;
+	/* Remove last node */
+	if (size & 1)
+		current->right = NULL;
 	else
-		parent->right = NULL;
+		current->left = NULL;
 
 	free(last);
+	heapify(*root);
 
-	sift_down(*root);
-
-	return (extracted_value);
-}
-
-/**
- * get_last_node - Finds the last node in the level order of the heap.
- * @root: Pointer to the root of the heap.
- *
- * Return: A pointer to the last node.
- */
-heap_t *get_last_node(heap_t *root)
-{
-	heap_t **queue;
-	size_t front = 0, rear = 0, size = 1024;
-	heap_t *last = NULL;
-
-	queue = malloc(sizeof(heap_t *) * size);
-	if (!queue)
-		return (NULL);
-
-	queue[rear++] = root;
-
-	while (front < rear)
-	{
-		last = queue[front++];
-
-		if (last->left)
-			queue[rear++] = last->left;
-		if (last->right)
-			queue[rear++] = last->right;
-	}
-
-	free(queue);
-	return (last);
-}
-
-/**
- * sift_down - Rebuilds the heap property by sifting down the node.
- * @node: The node to sift down.
- */
-void sift_down(heap_t *node)
-{
-	heap_t *largest;
-	int temp;
-
-	while (node)
-	{
-		largest = node;
-		if (node->left && node->left->n > largest->n)
-			largest = node->left;
-		if (node->right && node->right->n > largest->n)
-			largest = node->right;
-
-		if (largest == node)
-			return;
-
-		temp = node->n;
-		node->n = largest->n;
-		largest->n = temp;
-
-		node = largest;
-	}
+	return (value);
 }
