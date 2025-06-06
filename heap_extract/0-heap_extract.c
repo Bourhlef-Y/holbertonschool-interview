@@ -14,33 +14,46 @@ static void swap(int *a, int *b)
 }
 
 /**
- * binary_tree_height - measures the height of a binary tree
- * @tree: pointer to the root node of the tree
- * Return: height of tree, 0 if tree is NULL
+ * get_last_node - gets the last level-order node
+ * @root: pointer to the root node
+ * Return: pointer to the last node
  */
-static size_t binary_tree_height(const heap_t *tree)
+static heap_t *get_last_node(heap_t *root)
 {
-	size_t left, right;
+	heap_t **queue;
+	heap_t *last = NULL;
+	size_t i = 0;
+	size_t size = 0;
 
-	if (!tree)
-		return (0);
+	if (!root)
+		return (NULL);
 
-	left = binary_tree_height(tree->left);
-	right = binary_tree_height(tree->right);
+	/* Count nodes to determine queue size */
+	queue = malloc(sizeof(heap_t *) * 1024);
+	if (!queue)
+		return (NULL);
 
-	return (1 + (left > right ? left : right));
-}
+	queue[i] = root;
+	size++;
 
-/**
- * binary_tree_size - measures the size of a binary tree
- * @tree: pointer to the root node of the tree
- * Return: size of tree, 0 if tree is NULL
- */
-static size_t binary_tree_size(const heap_t *tree)
-{
-	if (!tree)
-		return (0);
-	return (1 + binary_tree_size(tree->left) + binary_tree_size(tree->right));
+	while (i < size)
+	{
+		if (queue[i]->left)
+		{
+			queue[size] = queue[i]->left;
+			size++;
+		}
+		if (queue[i]->right)
+		{
+			queue[size] = queue[i]->right;
+			size++;
+		}
+		i++;
+	}
+
+	last = queue[size - 1];
+	free(queue);
+	return (last);
 }
 
 /**
@@ -74,37 +87,32 @@ static void heapify(heap_t *root)
 int heap_extract(heap_t **root)
 {
 	int value;
-	heap_t *last, *current;
-	size_t size, bit;
+	heap_t *last;
 
 	if (!root || !*root)
 		return (0);
 
 	value = (*root)->n;
-	size = binary_tree_size(*root);
 
-	if (size == 1)
+	if (!(*root)->left && !(*root)->right)
 	{
 		free(*root);
 		*root = NULL;
 		return (value);
 	}
 
-	/* Find the last node */
-	current = *root;
-	for (bit = 1 << (binary_tree_height(*root) - 1); bit > 1; bit >>= 1)
-		current = size & bit ? current->right : current->left;
-
-	last = size & 1 ? current->right : current->left;
+	last = get_last_node(*root);
+	if (!last)
+		return (0);
 
 	/* Replace root value with last node value */
 	(*root)->n = last->n;
 
-	/* Remove last node */
-	if (size & 1)
-		current->right = NULL;
+	/* Remove last node from its parent */
+	if (last->parent->right == last)
+		last->parent->right = NULL;
 	else
-		current->left = NULL;
+		last->parent->left = NULL;
 
 	free(last);
 	heapify(*root);
