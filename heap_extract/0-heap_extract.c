@@ -18,7 +18,7 @@ static void swap(int *a, int *b)
  * @tree: pointer to the root node of the tree
  * Return: height of tree, 0 if tree is NULL
  */
-static size_t binary_tree_height(const binary_tree_t *tree)
+static size_t binary_tree_height(const heap_t *tree)
 {
 	size_t left, right;
 
@@ -36,7 +36,7 @@ static size_t binary_tree_height(const binary_tree_t *tree)
  * @tree: pointer to the root node of the tree
  * Return: size of tree, 0 if tree is NULL
  */
-static size_t binary_tree_size(const binary_tree_t *tree)
+static size_t binary_tree_size(const heap_t *tree)
 {
 	if (!tree)
 		return (0);
@@ -47,11 +47,11 @@ static size_t binary_tree_size(const binary_tree_t *tree)
  * heapify - maintains the max heap property
  * @root: pointer to the root node
  */
-static void heapify(binary_tree_t *root)
+static void heapify(heap_t *root)
 {
-	binary_tree_t *largest = root;
-	binary_tree_t *left = root->left;
-	binary_tree_t *right = root->right;
+	heap_t *largest = root;
+	heap_t *left = root->left;
+	heap_t *right = root->right;
 
 	if (left && left->n > largest->n)
 		largest = left;
@@ -71,10 +71,10 @@ static void heapify(binary_tree_t *root)
  * @root: double pointer to the root node of the heap
  * Return: value stored in the root node, or 0 on failure
  */
-int heap_extract(binary_tree_t **root)
+int heap_extract(heap_t **root)
 {
 	int value;
-	binary_tree_t *last, *current;
+	heap_t *last, *current;
 	size_t size, bit;
 
 	if (!root || !*root)
